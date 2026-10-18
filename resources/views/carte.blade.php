@@ -10,7 +10,11 @@
 </head>
 <body>
 <header class="bandeau">
-    <div><strong>GéoDéchet</strong><span id="compteur"></span></div>
+    <div class="bandeau-gauche">
+        <a class="retour" href="{{ url('/') }}">&larr; Accueil</a>
+        <strong>GéoDéchet</strong>
+        <span id="compteur"></span>
+    </div>
     <button id="btn-signaler" type="button">Signaler un dépôt</button>
 </header>
 

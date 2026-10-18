@@ -1,0 +1,104 @@
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
+
+/* ---------- En-tête ---------- */
+
+.entete { display: flex; justify-content: space-between; align-items: center; padding: 14px 32px; background: white; box-shadow: 0 1px 6px rgba(0,0,0,0.12); position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 22px; font-weight: bold; color: #1b5e20; text-decoration: none; }
+.entete nav { display: flex; align-items: center; gap: 22px; }
+.entete nav a { color: #37474f; text-decoration: none; transition: color 0.2s; }
+.entete nav a:hover { color: #1b5e20; }
+.entete .bouton-nav { background: #1b5e20; color: white; padding: 8px 16px; border-radius: 6px; transition: background 0.2s, transform 0.2s; }
+.entete .bouton-nav:hover { color: white; background: #2e7d32; transform: translateY(-2px); }
+
+/* ---------- Bannière ---------- */
+
+.banniere { position: relative; min-height: 88vh; display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 90px 24px; overflow: hidden; background-color: #1b5e20; }
+
+.fond { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27,94,32,0.85), rgba(67,160,71,0.6)), url('../images/fond.jpg') center / cover no-repeat; animation: zoom-lent 20s ease-in-out infinite alternate; }
+
+.contenu { position: relative; z-index: 1; }
+
+.sur-titre { text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin: 0 0 14px 0; }
+.banniere h1 { max-width: 760px; margin: 0 auto 18px auto; font-size: 40px; line-height: 1.25; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+.banniere .texte { max-width: 620px; margin: 0 auto 32px auto; font-size: 18px; line-height: 1.6; }
+
+.contenu > * { opacity: 0; animation: apparition 0.8s ease forwards; }
+.contenu .sur-titre { animation-delay: 0.1s; }
+.contenu h1 { animation-delay: 0.3s; }
+.contenu .texte { animation-delay: 0.5s; }
+.contenu .actions { animation-delay: 0.7s; }
+
+.actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.btn { padding: 13px 26px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
+.btn-plein { background: white; color: #1b5e20; }
+.btn-plein:hover { background: #e8f5e9; }
+.btn-contour { border: 2px solid white; color: white; }
+.btn-contour:hover { background: rgba(255,255,255,0.18); }
+
+.fleche { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 1; color: white; font-size: 30px; text-decoration: none; animation: rebond 1.8s ease-in-out infinite; }
+
+/* ---------- Animations ---------- */
+
+@keyframes zoom-lent {
+    from { transform: scale(1); }
+    to { transform: scale(1.12); }
+}
+
+@keyframes apparition {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rebond {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, 10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fond, .fleche { animation: none; }
+    .contenu > * { animation: none; opacity: 1; }
+}
+
+/* ---------- Téléphone ---------- */
+
+@media (max-width: 600px) {
+    .entete { padding: 12px 16px; }
+    .entete nav a:not(.bouton-nav) { display: none; }
+    .banniere { padding: 60px 18px; }
+    .banniere h1 { font-size: 28px; }
+}
+/* ---------- Chiffres ---------- */
+
+.chiffres { padding: 70px 24px; background: #f1f8e9; text-align: center; }
+.chiffres h2 { margin: 0 0 36px 0; font-size: 30px; color: #1b5e20; }
+
+.grille-chiffres { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+
+.carte-chiffre { background: white; padding: 30px 16px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.2s; }
+.carte-chiffre:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+.carte-chiffre.attente { opacity: 0; transform: translateY(30px); }
+
+.nombre { display: block; font-size: 48px; font-weight: bold; color: #2e7d32; }
+.carte-chiffre p { margin: 8px 0 0 0; color: #455a64; }
+/* ---------- Comment ça marche ---------- */
+
+.etapes { padding: 70px 24px; background: white; text-align: center; }
+.etapes h2 { margin: 0 0 36px 0; font-size: 30px; color: #1b5e20; }
+
+.grille-etapes { max-width: 1000px; margin: 0 auto 36px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+
+.etape { padding: 28px 22px; border: 1px solid #c8e6c9; border-radius: 12px; transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.2s; }
+.etape:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.etape.attente { opacity: 0; transform: translateY(30px); }
+
+.numero { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #2e7d32; color: white; font-size: 22px; font-weight: bold; }
+.etape h3 { margin: 14px 0 8px 0; color: #263238; }
+.etape p { margin: 0; line-height: 1.6; color: #455a64; }
+
+.btn-vert { display: inline-block; background: #1b5e20; color: white; }
+.btn-vert:hover { background: #2e7d32; }

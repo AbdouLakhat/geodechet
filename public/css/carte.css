@@ -34,3 +34,6 @@ body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-fam
 #panneau input[type="file"] { width: 100%; margin-top: 4px; }
 #apercu { display: none; width: 100%; max-height: 150px; object-fit: cover; margin-top: 8px; border-radius: 6px; }
 
+.bandeau-gauche { display: flex; align-items: center; gap: 12px; }
+.bandeau a.retour { color: white; text-decoration: none; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.6); border-radius: 6px; font-size: 14px; }
+.bandeau a.retour:hover { background: rgba(255,255,255,0.18); }
