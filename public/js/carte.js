@@ -9,6 +9,7 @@ var TYPES = {
 var modeSignalement = false;
 var pointChoisi = null;
 var marqueur = null;
+var choixOuvert = false;
 
 var jeton = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -105,25 +106,68 @@ function chargerSignalements() {
                 }
             }).addTo(coucheSignalements);
 
-            document.getElementById('compteur').textContent = donnees.features.length + ' signalement(s)';
         });
 }
 
-/* ---------- Légende ---------- */
 
-var legende = L.control({ position: 'bottomleft' });
+/* ---------- Position du dépôt ---------- */
 
-legende.onAdd = function () {
-    var div = L.DomUtil.create('div', 'legende');
-    var html = '';
-    Object.keys(TYPES).forEach(function (cle) {
-        html += '<div><i style="background:' + TYPES[cle].couleur + '"></i>' + TYPES[cle].nom + '</div>';
+function afficherPoint(point) {
+    pointChoisi = point;
+    document.getElementById('coords').textContent =
+        point.lat.toFixed(5) + ', ' + point.lng.toFixed(5);
+}
+
+function placerPoint(point) {
+    if (marqueur) carte.removeLayer(marqueur);
+    marqueur = L.marker(point, { draggable: true }).addTo(carte);
+    marqueur.on('dragend', function () {
+        afficherPoint(marqueur.getLatLng());
     });
-    div.innerHTML = html;
-    return div;
-};
+    afficherPoint(point);
+    document.getElementById('panneau').classList.remove('cache');
+}
 
-legende.addTo(carte);
+function ouvrirChoix() {
+    carte.closePopup();
+    document.getElementById('choix-info').textContent = '';
+    document.getElementById('choix').classList.remove('cache');
+    document.getElementById('btn-signaler').textContent = 'Annuler';
+    choixOuvert = true;
+}
+
+function fermerChoix() {
+    document.getElementById('choix').classList.add('cache');
+    choixOuvert = false;
+}
+
+function utiliserMaPosition() {
+    var info = document.getElementById('choix-info');
+
+    if (!navigator.geolocation) {
+        info.textContent = 'Votre appareil ne permet pas la géolocalisation. Choisissez sur la carte.';
+        return;
+    }
+
+    info.textContent = 'Recherche de votre position...';
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            var point = L.latLng(position.coords.latitude, position.coords.longitude);
+            fermerChoix();
+            placerPoint(point);
+            carte.setView(point, 18);
+        },
+        function (erreur) {
+            if (erreur.code === 1) {
+                info.textContent = 'Accès à la position refusé. Autorisez-le dans le navigateur, ou choisissez sur la carte.';
+            } else {
+                info.textContent = 'Position introuvable. Réessayez, ou choisissez sur la carte.';
+            }
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
 
 /* ---------- Mode signalement ---------- */
 
@@ -136,6 +180,7 @@ function activerSignalement() {
 }
 
 function annulerSignalement() {
+    fermerChoix();
     modeSignalement = false;
     pointChoisi = null;
     if (marqueur) carte.removeLayer(marqueur);
@@ -150,12 +195,13 @@ function annulerSignalement() {
     document.getElementById('panneau').classList.add('cache');
     document.getElementById('message').style.display = 'none';
 }
-function envoyerSignalement(){
+
+function envoyerSignalement() {
     var erreur = document.getElementById('erreur-form');
     erreur.textContent = '';
 
     if (!pointChoisi) {
-        erreur.textContent = 'Clique sur la carte pour choisir la position.';
+        erreur.textContent = 'Choisis d\'abord la position du dépôt.';
         return;
     }
 
@@ -229,11 +275,20 @@ function envoyerSignalement(){
 /* ---------- Événements ---------- */
 
 document.getElementById('btn-signaler').addEventListener('click', function () {
-    if (modeSignalement) {
+    var panneauOuvert = !document.getElementById('panneau').classList.contains('cache');
+
+    if (modeSignalement || choixOuvert || panneauOuvert) {
         annulerSignalement();
     } else {
-        activerSignalement();
+        ouvrirChoix();
     }
+});
+
+document.getElementById('btn-choix-position').addEventListener('click', utiliserMaPosition);
+
+document.getElementById('btn-choix-carte').addEventListener('click', function () {
+    fermerChoix();
+    activerSignalement();
 });
 
 document.getElementById('btn-envoyer').addEventListener('click', envoyerSignalement);
@@ -241,13 +296,9 @@ document.getElementById('btn-annuler').addEventListener('click', annulerSignalem
 
 carte.on('click', function (e) {
     if (!modeSignalement) return;
-    pointChoisi = e.latlng;
-    if (marqueur) carte.removeLayer(marqueur);
-    marqueur = L.marker(e.latlng).addTo(carte);
-    document.getElementById('coords').textContent =
-        e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
-    document.getElementById('panneau').classList.remove('cache');
+    placerPoint(e.latlng);
 });
+
 document.getElementById('photo').addEventListener('change', function () {
     var apercu = document.getElementById('apercu');
     var fichier = this.files[0];
@@ -258,5 +309,11 @@ document.getElementById('photo').addEventListener('change', function () {
         apercu.style.display = 'none';
     }
 });
+
+var params = new URLSearchParams(window.location.search);
+if (params.get('signaler') === '1') {
+    ouvrirChoix();
+}
+
 chargerUnites();
 chargerSignalements();

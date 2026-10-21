@@ -28,8 +28,7 @@
                 directement sur la carte des 20 Unités de la commune.
             </p>
             <div class="actions">
-                <a class="btn btn-plein" href="{{ url('/carte') }}">Signaler un dépôt</a>
-                <a class="btn btn-contour" href="#fonctionnement">Comment ça marche</a>
+                <a class="btn btn-plein" href="{{ url('/carte?signaler=1') }}">Signaler un dépôt</a>
             </div>
         </div>
 

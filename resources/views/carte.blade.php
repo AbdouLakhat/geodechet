@@ -11,9 +11,8 @@
 <body>
 <header class="bandeau">
     <div class="bandeau-gauche">
-        <a class="retour" href="{{ url('/') }}">&larr; Accueil</a>
+        <a class="retour" href="{{ url('/') }}">&larr;</a>
         <strong>GéoDéchet</strong>
-        <span id="compteur"></span>
     </div>
     <button id="btn-signaler" type="button">Signaler un dépôt</button>
 </header>
@@ -22,9 +21,17 @@
     <div id="carte"></div>
     <div id="message"></div>
 
+    <div id="choix" class="cache">
+        <h3>Où se trouve le dépôt ?</h3>
+        <button id="btn-choix-position" type="button">📍 Utiliser ma position</button>
+        <button id="btn-choix-carte" type="button">🗺️ Choisir sur la carte</button>
+        <p id="choix-info"></p>
+    </div>
+
     <aside id="panneau" class="cache">
         <h3>Nouveau signalement</h3>
         <p>Position : <span id="coords"></span></p>
+        <p class="astuce">Vous pouvez déplacer le repère pour corriger la position.</p>
 
         <label for="type_dechet">Type de déchet *</label>
         <select id="type_dechet">
@@ -38,6 +45,7 @@
 
         <label for="description">Description (facultatif)</label>
         <textarea id="description" maxlength="500" placeholder="500 caractères maximum"></textarea>
+
         <label for="photo">Photo (facultatif)</label>
         <input type="file" id="photo" accept="image/jpeg,image/png,image/webp">
         <img id="apercu" alt="Aperçu de la photo">

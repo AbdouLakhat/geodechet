@@ -52,8 +52,8 @@ class SignalementController extends Controller
             'type_dechet.required' => 'Choisis un type de déchet.',
             'type_dechet.in' => 'Ce type de déchet n\'est pas valide.',
             'description.max' => 'La description ne doit pas dépasser 500 caractères.',
-            'latitude.required' => 'Clique sur la carte pour choisir une position.',
-            'longitude.required' => 'Clique sur la carte pour choisir une position.',
+            'latitude.required' => 'Choisis d\'abord la position du dépôt.',
+            'longitude.required' => 'Choisis d\'abord la position du dépôt.',
             'latitude.between' => 'La position n\'est pas valide.',
             'longitude.between' => 'La position n\'est pas valide.',
             'photo.image' => 'Le fichier doit être une image.',
@@ -61,21 +61,30 @@ class SignalementController extends Controller
             'photo.max' => 'La photo ne doit pas dépasser 5 Mo.',
         ]);
 
-        $chemin = null;
-        if ($request->hasFile('photo')) {
-            $chemin = $request->file('photo')->store('signalements', 'public');
-        }
-
         $unite = DB::selectOne(
             'SELECT id, nom FROM unites WHERE ST_Contains(contour, ST_SetSRID(ST_MakePoint(?, ?), 4326))',
             [$donnees['longitude'], $donnees['latitude']]
         );
 
+        if (!$unite) {
+            return response()->json([
+                'message' => 'Position hors de la commune.',
+                'errors' => [
+                    'position' => ['Cette position est en dehors de la commune des Parcelles Assainies.'],
+                ],
+            ], 422);
+        }
+
+        $chemin = null;
+        if ($request->hasFile('photo')) {
+            $chemin = $request->file('photo')->store('signalements', 'public');
+        }
+
         DB::insert(
             'INSERT INTO signalements (unite_id, type_dechet, description, photo, statut, date_signalement, position, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, now(), ST_SetSRID(ST_MakePoint(?, ?), 4326), now(), now())',
             [
-                $unite ? $unite->id : null,
+                $unite->id,
                 $donnees['type_dechet'],
                 $donnees['description'] ?? null,
                 $chemin,
@@ -85,8 +94,6 @@ class SignalementController extends Controller
             ]
         );
 
-        $lieu = $unite ? 'dans ' . $unite->nom : 'hors des Unités';
-
-        return response()->json(['message' => 'Signalement enregistré ' . $lieu]);
+        return response()->json(['message' => 'Signalement enregistré dans ' . $unite->nom]);
     }
 }
