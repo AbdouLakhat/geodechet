@@ -18,7 +18,7 @@ body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
 
 .banniere { position: relative; min-height: 88vh; display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 90px 24px; overflow: hidden; background-color: #1b5e20; }
 
-.fond { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27,94,32,0.85), rgba(67,160,71,0.6)), url('../images/fond.jpg') center / cover no-repeat; animation: zoom-lent 20s ease-in-out infinite alternate; }
+.fond { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27,94,32,0.6), rgba(67,160,71,0.4)), url('../images/fond.jpg') center / cover no-repeat; animation: zoom-lent 20s ease-in-out infinite alternate; }
 
 .contenu { position: relative; z-index: 1; }
 
