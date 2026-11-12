@@ -15,9 +15,11 @@ var jeton = document.querySelector('meta[name="csrf-token"]').content;
 
 var carte = L.map('carte').setView([14.7600, -17.4430], 15);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+var fondPlan = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
 }).addTo(carte);
+
+ajouterChoixDeFond(carte, fondPlan);
 
 carte.createPane('paneSignalements');
 carte.getPane('paneSignalements').style.zIndex = 650;
@@ -67,48 +69,51 @@ function chargerUnites() {
         });
 }
 
-function chargerSignalements() {
-    fetch('/signalements', { headers: { 'Accept': 'application/json' } })
-        .then(function (reponse) { return reponse.json(); })
-        .then(function (donnees) {
-            coucheSignalements.clearLayers();
+var DUREE_AFFICHAGE = 10 * 60 * 1000;
 
-            L.geoJSON(donnees, {
-                pointToLayer: function (feature, position) {
-                    var type = TYPES[feature.properties.type_dechet] || TYPES.autre;
-                    return L.circleMarker(position, {
-                        pane: 'paneSignalements',
-                        radius: 8,
-                        color: 'white',
-                        weight: 2,
-                        fillColor: type.couleur,
-                        fillOpacity: 0.9,
-                        bubblingMouseEvents: true
-                    });
-                },
-                onEachFeature: function (feature, couche) {
-                    couche.on('click', function (e) {
-                        if (modeSignalement) return;
-                        var p = feature.properties;
-                        var type = TYPES[p.type_dechet] || TYPES.autre;
-                        var html = '<strong>' + echapper(type.nom) + '</strong><br>'
-                            + 'Unité : ' + echapper(p.unite || 'hors des Unités') + '<br>'
-                            + 'Statut : ' + echapper(p.statut) + '<br>'
-                            + 'Date : ' + echapper(p.date_signalement);
-                        if (p.description) {
-                            html += '<br><em>' + echapper(p.description) + '</em>';
-                        }
-                        if (p.photo) {
-                            html += '<br><img src="' + encodeURI(p.photo) + '" style="width:200px; margin-top:6px; border-radius:6px;">';
-                        }
-                        ouvrirBulle(e.latlng, html);
-                    });
-                }
-            }).addTo(coucheSignalements);
-
-        });
+function lireMesSignalements() {
+    var liste = JSON.parse(sessionStorage.getItem('mesSignalements') || '[]');
+    var maintenant = Date.now();
+    return liste.filter(function (s) {
+        return maintenant - s.heure < DUREE_AFFICHAGE;
+    });
 }
 
+function afficherMesSignalements() {
+    var liste = lireMesSignalements();
+    sessionStorage.setItem('mesSignalements', JSON.stringify(liste));
+    coucheSignalements.clearLayers();
+
+    liste.forEach(function (s) {
+        var type = TYPES[s.type] || TYPES.autre;
+        var html = '<strong>Votre signalement</strong><br>' + echapper(type.nom)
+            + '<br><small>Il disparaîtra de la carte dans quelques minutes.</small>';
+
+        var point = L.circleMarker([s.lat, s.lng], {
+            pane: 'paneSignalements',
+            radius: 9,
+            color: 'white',
+            weight: 2,
+            fillColor: type.couleur,
+            fillOpacity: 0.9,
+            bubblingMouseEvents: true
+        });
+
+        point.on('click', function (e) {
+            if (modeSignalement) return;
+            ouvrirBulle(e.latlng, html);
+        });
+
+        point.addTo(coucheSignalements);
+    });
+}
+
+function ajouterMonSignalement(lat, lng, type) {
+    var liste = lireMesSignalements();
+    liste.push({ lat: lat, lng: lng, type: type, heure: Date.now() });
+    sessionStorage.setItem('mesSignalements', JSON.stringify(liste));
+    afficherMesSignalements();
+}
 
 /* ---------- Position du dépôt ---------- */
 
@@ -169,6 +174,52 @@ function utiliserMaPosition() {
     );
 }
 
+/* ---------- Erreurs du formulaire ---------- */
+
+function afficherErreurs(erreurs) {
+    var premier = null;
+
+    erreurs.forEach(function (e) {
+        var champ = e[0] ? document.getElementById(e[0]) : null;
+
+        if (!champ) {
+            document.getElementById('erreur-form').textContent = e[1];
+            return;
+        }
+
+        champ.classList.add('invalide');
+
+        var cible = champ;
+        if (champ.type === 'checkbox') {
+            cible = champ.parentElement;
+            cible.classList.add('invalide');
+        }
+
+        var message = document.createElement('div');
+        message.className = 'message-champ';
+        message.textContent = e[1];
+        cible.insertAdjacentElement('afterend', message);
+
+        if (!premier) {
+            premier = champ;
+        }
+    });
+
+    if (premier) {
+        premier.focus();
+    }
+}
+
+function effacerErreurs() {
+    document.querySelectorAll('#panneau .invalide').forEach(function (c) {
+        c.classList.remove('invalide');
+    });
+    document.querySelectorAll('#panneau .message-champ').forEach(function (m) {
+        m.remove();
+    });
+    document.getElementById('erreur-form').textContent = '';
+}
+
 /* ---------- Mode signalement ---------- */
 
 function activerSignalement() {
@@ -191,43 +242,76 @@ function annulerSignalement() {
     document.getElementById('description').value = '';
     document.getElementById('photo').value = '';
     document.getElementById('apercu').style.display = 'none';
-    document.getElementById('erreur-form').textContent = '';
+    document.getElementById('nom').value = '';
+    document.getElementById('prenom').value = '';
+    document.getElementById('telephone').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('consentement').checked = false;
+    effacerErreurs();
     document.getElementById('panneau').classList.add('cache');
     document.getElementById('message').style.display = 'none';
 }
 
 function envoyerSignalement() {
-    var erreur = document.getElementById('erreur-form');
-    erreur.textContent = '';
+    effacerErreurs();
 
     if (!pointChoisi) {
-        erreur.textContent = 'Choisis d\'abord la position du dépôt.';
+        afficherErreurs([[null, 'Choisis d\'abord la position du dépôt.']]);
         return;
     }
 
+    var erreurs = [];
+
     var type = document.getElementById('type_dechet').value;
     if (type === '') {
-        erreur.textContent = 'Choisis un type de déchet.';
-        return;
+        erreurs.push(['type_dechet', 'Choisis un type de déchet.']);
     }
 
     var description = document.getElementById('description').value.trim();
     if (description.length > 500) {
-        erreur.textContent = 'La description ne doit pas dépasser 500 caractères.';
-        return;
+        erreurs.push(['description', 'La description ne doit pas dépasser 500 caractères.']);
+    }
+
+    var nom = document.getElementById('nom').value.trim();
+    var prenom = document.getElementById('prenom').value.trim();
+    var telephone = document.getElementById('telephone').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var consentement = document.getElementById('consentement').checked;
+
+    var motifNom = /^[\p{L}][\p{L}\s'’-]*$/u;
+    if (nom === '' || !motifNom.test(nom)) {
+        erreurs.push(['nom', 'Entrez votre nom (lettres uniquement).']);
+    }
+    if (prenom === '' || !motifNom.test(prenom)) {
+        erreurs.push(['prenom', 'Entrez votre prénom (lettres uniquement).']);
+    }
+
+    var numero = telephone.replace(/[\s.\-]/g, '');
+    if (!/^(\+221|00221|221)?[0-9]{9}$/.test(numero)) {
+        erreurs.push(['telephone', 'Entrez un numéro valide : 9 chiffres, par exemple 77 123 45 67.']);
+    }
+
+    if (email === '' || !document.getElementById('email').checkValidity()) {
+        erreurs.push(['email', 'Entrez une adresse e-mail valide.']);
+    }
+
+    if (!consentement) {
+        erreurs.push(['consentement', 'Vous devez accepter l\'utilisation de vos informations.']);
     }
 
     var fichier = document.getElementById('photo').files[0];
     if (fichier) {
         var formatsOk = ['image/jpeg', 'image/png', 'image/webp'];
         if (formatsOk.indexOf(fichier.type) === -1) {
-            erreur.textContent = 'La photo doit être au format JPG, PNG ou WEBP.';
-            return;
+            erreurs.push(['photo', 'La photo doit être au format JPG, PNG ou WEBP.']);
+        } else if (fichier.size > 5 * 1024 * 1024) {
+            erreurs.push(['photo', 'La photo ne doit pas dépasser 5 Mo.']);
         }
-        if (fichier.size > 5 * 1024 * 1024) {
-            erreur.textContent = 'La photo ne doit pas dépasser 5 Mo.';
-            return;
-        }
+    }
+
+    if (erreurs.length > 0) {
+        afficherErreurs(erreurs);
+        return;
     }
 
     var donnees = new FormData();
@@ -235,6 +319,11 @@ function envoyerSignalement() {
     donnees.append('description', description);
     donnees.append('latitude', pointChoisi.lat);
     donnees.append('longitude', pointChoisi.lng);
+    donnees.append('nom', nom);
+    donnees.append('prenom', prenom);
+    donnees.append('telephone', numero);
+    donnees.append('email', email);
+    donnees.append('consentement', '1');
     if (fichier) {
         donnees.append('photo', fichier);
     }
@@ -243,6 +332,8 @@ function envoyerSignalement() {
     bouton.disabled = true;
     bouton.textContent = 'Envoi...';
     var envoiReussi = false;
+    var lat = pointChoisi.lat;
+    var lng = pointChoisi.lng;
 
     fetch('/signalements', {
         method: 'POST',
@@ -263,11 +354,14 @@ function envoyerSignalement() {
             if (envoiReussi) {
                 annulerSignalement();
                 afficherMessage(resultat.message, 'ok');
-                chargerSignalements();
+                ajouterMonSignalement(lat, lng, type);
             } else if (resultat.errors) {
-                erreur.textContent = Object.values(resultat.errors)[0][0];
+                var liste = Object.keys(resultat.errors).map(function (cle) {
+                    return [document.getElementById(cle) ? cle : null, resultat.errors[cle][0]];
+                });
+                afficherErreurs(liste);
             } else {
-                erreur.textContent = 'Une erreur est survenue. Réessaie.';
+                afficherErreurs([[null, 'Une erreur est survenue. Réessaie.']]);
             }
         });
 }
@@ -310,10 +404,26 @@ document.getElementById('photo').addEventListener('change', function () {
     }
 });
 
+document.querySelectorAll('#panneau input, #panneau select, #panneau textarea').forEach(function (champ) {
+    function retirer() {
+        champ.classList.remove('invalide');
+        champ.parentElement.classList.remove('invalide');
+
+        var cible = champ.type === 'checkbox' ? champ.parentElement : champ;
+        var suivant = cible.nextElementSibling;
+        if (suivant && suivant.classList.contains('message-champ')) {
+            suivant.remove();
+        }
+    }
+    champ.addEventListener('input', retirer);
+    champ.addEventListener('change', retirer);
+});
+
 var params = new URLSearchParams(window.location.search);
 if (params.get('signaler') === '1') {
     ouvrirChoix();
 }
 
 chargerUnites();
-chargerSignalements();
+afficherMesSignalements();
+setInterval(afficherMesSignalements, 30000);

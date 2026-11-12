@@ -10,9 +10,11 @@ var tousLesSignalements = [];
 
 var carte = L.map('carte-admin').setView([14.7600, -17.4430], 15);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+var fondPlan = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
 }).addTo(carte);
+
+ajouterChoixDeFond(carte, fondPlan);
 
 carte.createPane('paneSignalements');
 carte.getPane('paneSignalements').style.zIndex = 650;
@@ -64,7 +66,7 @@ function chargerUnites() {
 /* ---------- Signalements ---------- */
 
 function chargerSignalements() {
-    fetch('/signalements', { headers: { 'Accept': 'application/json' } })
+    fetch('/admin/donnees/signalements', { headers: { 'Accept': 'application/json' } })
         .then(function (reponse) { return reponse.json(); })
         .then(function (donnees) {
             tousLesSignalements = donnees.features;

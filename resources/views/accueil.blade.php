@@ -8,7 +8,10 @@
 </head>
 <body>
 <header class="entete">
-    <a class="logo" href="{{ url('/') }}">GéoDéchet</a>
+    <a class="logo" href="{{ url('/') }}">
+        <img src="{{ asset('images/logo-icone.png') }}" alt="" class="logo-icone">
+        <span>GéoDéchet</span>
+    </a>
     <nav>
         <a href="#chiffres">Chiffres</a>
         <a href="#fonctionnement">Comment ça marche</a>

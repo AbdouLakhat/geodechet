@@ -23,7 +23,7 @@ class ConnexionController extends Controller
             'password.required' => 'Entrez votre mot de passe.',
         ]);
 
-        if (Auth::attempt($identifiants)) {
+        if (Auth::attempt($identifiants + ['actif' => true])) {
             $request->session()->regenerate();
             return redirect('/admin');
         }

@@ -44,3 +44,14 @@ body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-fam
 #choix button:hover { background: #2e7d32; }
 #choix-info { font-size: 14px; color: #455a64; margin: 10px 0 0 0; min-height: 18px; }
 .astuce { font-size: 13px; color: #607d8b; }
+.coordonnees { border: 1px solid #cfd8dc; border-radius: 8px; padding: 10px 12px 12px 12px; margin: 14px 0 0 0; }
+.coordonnees legend { font-size: 14px; color: #1b5e20; font-weight: bold; padding: 0 6px; }
+#panneau .coordonnees input[type="text"],
+#panneau .coordonnees input[type="tel"],
+#panneau .coordonnees input[type="email"] { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px; }
+#panneau .consentement { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; margin-top: 14px; }
+#panneau .consentement input { margin-top: 3px; flex-shrink: 0; }
+#panneau .invalide { border: 2px solid #c62828 !important; background: #ffebee; border-radius: 6px; }
+#panneau .consentement.invalide { padding: 6px; color: #c62828; }
+#panneau .message-champ { color: #c62828; font-size: 13px; margin: 4px 0 0 0; }
+#panneau .message-champ::before { content: "⚠ "; }

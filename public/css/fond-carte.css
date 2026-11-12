@@ -1,0 +1,3 @@
+.bouton-fond a { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: white; color: #37474f; }
+.bouton-fond a:hover { background: #f4f4f4; }
+.bouton-fond a.actif { background: #1b5e20; color: white; }

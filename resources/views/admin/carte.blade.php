@@ -4,6 +4,7 @@
 
 @section('contenu')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="{{ asset('css/fond-carte.css') }}">
 
     <h1>Carte</h1>
     <p class="total">Unités et signalements de la commune</p>
@@ -36,5 +37,6 @@
     <div id="carte-admin"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ asset('js/fond-carte.js') }}"></script>
     <script src="{{ asset('js/admin-carte.js') }}"></script>
 @endsection

@@ -7,7 +7,8 @@ body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
 /* ---------- En-tête ---------- */
 
 .entete { display: flex; justify-content: space-between; align-items: center; padding: 14px 32px; background: white; box-shadow: 0 1px 6px rgba(0,0,0,0.12); position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 22px; font-weight: bold; color: #1b5e20; text-decoration: none; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: bold; color: #1b5e20; text-decoration: none; }
+.logo-icone { width: 38px; height: 38px; object-fit: contain; }
 .entete nav { display: flex; align-items: center; gap: 22px; }
 .entete nav a { color: #37474f; text-decoration: none; transition: color 0.2s; }
 .entete nav a:hover { color: #1b5e20; }

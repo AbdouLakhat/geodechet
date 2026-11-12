@@ -39,8 +39,8 @@
             </thead>
             <tbody>
             @forelse ($signalements as $s)
-                <tr>
-                    <td>{{ $s->id }}</td>
+                <tr class="ligne-cliquable" data-href="{{ url('/admin/signalements/' . $s->id) }}">
+                    <td><a class="lien-numero" href="{{ url('/admin/signalements/' . $s->id) }}">{{ $s->id }}</a></td>
                     <td>{{ date('d/m/Y', strtotime($s->date_signalement)) }}</td>
                     <td>{{ $types[$s->type_dechet] ?? $s->type_dechet }}</td>
                     <td>{{ $s->unite ?? 'Hors des Unités' }}</td>
@@ -67,7 +67,10 @@
                     </td>
                     <td>{{ $s->description ? Str::limit($s->description, 60) : '–' }}</td>
                     <td>
-                        <button type="button" class="btn-supprimer" data-id="{{ $s->id }}" data-action="{{ url('/admin/signalements/' . $s->id) }}">Supprimer</button>
+                        <div class="actions-ligne">
+                            <a class="btn-modifier" href="{{ url('/admin/signalements/' . $s->id . '/modifier') }}">Modifier</a>
+                            <button type="button" class="btn-supprimer" data-id="{{ $s->id }}" data-action="{{ url('/admin/signalements/' . $s->id) }}">Supprimer</button>
+                        </div>
                     </td>
                 </tr>
             @empty

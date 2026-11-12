@@ -30,6 +30,7 @@
                 Signalements
             </a>
             <a href="{{ url('/admin/carte') }}" class="{{ request()->is('admin/carte') ? 'actif' : '' }}">🗺️ Carte</a>
+            <a href="{{ url('/admin/chauffeurs') }}" class="{{ request()->is('admin/chauffeurs*') ? 'actif' : '' }}">🚚 Chauffeurs</a>
         </nav>
 
         <div class="bas">

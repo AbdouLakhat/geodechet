@@ -7,6 +7,7 @@
     <title>GéoDéchet</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ asset('css/carte.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fond-carte.css') }}">
 </head>
 <body>
 <header class="bandeau">
@@ -49,7 +50,26 @@
         <label for="photo">Photo (facultatif)</label>
         <input type="file" id="photo" accept="image/jpeg,image/png,image/webp">
         <img id="apercu" alt="Aperçu de la photo">
+        <fieldset class="coordonnees">
+            <legend>Vos coordonnées *</legend>
 
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" maxlength="60" autocomplete="family-name">
+
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" maxlength="60" autocomplete="given-name">
+
+            <label for="telephone">Téléphone</label>
+            <input type="tel" id="telephone" maxlength="20" autocomplete="tel" placeholder="77 123 45 67">
+
+            <label for="email">Adresse e-mail</label>
+            <input type="email" id="email" maxlength="120" autocomplete="email">
+
+            <label class="consentement">
+                <input type="checkbox" id="consentement">
+                <span>J'accepte que mon nom, mon téléphone et mon e-mail soient utilisés pour traiter mon signalement. Ils ne sont visibles que par l'administration.</span>
+            </label>
+        </fieldset>
         <p id="erreur-form"></p>
 
         <div class="boutons">
@@ -60,6 +80,7 @@
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('js/fond-carte.js') }}"></script>
 <script src="{{ asset('js/carte.js') }}"></script>
 </body>
 </html>
