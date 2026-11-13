@@ -264,16 +264,7 @@ class AdminController extends Controller
 
         $type = ucfirst(str_replace('_', ' ', $signalement->type_dechet));
 
-        $texte = "Bonjour " . $chauffeur->name . ",\n\n"
-            . "Un signalement vous a été affecté.\n\n"
-            . "Numéro : " . $signalement->id . "\n"
-            . "Type de déchet : " . $type . "\n"
-            . "Unité : " . ($signalement->unite ?? 'Hors des Unités') . "\n"
-            . "Description : " . ($signalement->description ?? 'Aucune') . "\n\n"
-            . "Merci de vous rendre sur place.\n\n"
-            . "GéoDéchet";
-
-        Mail::raw($texte, function ($message) use ($chauffeur, $signalement) {
+        Mail::send('emails.affectation', compact('chauffeur', 'signalement', 'type'), function ($message) use ($chauffeur, $signalement) {
             $message->to($chauffeur->email)
                 ->subject('GéoDéchet : signalement n° ' . $signalement->id . ' affecté');
         });
