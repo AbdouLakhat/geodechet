@@ -22,6 +22,9 @@
     @error('statut')
     <p class="message-erreur">{{ $message }}</p>
     @enderror
+    @error('chauffeur_id')
+    <p class="message-erreur">{{ $message }}</p>
+    @enderror
 
     <div class="defilement">
         <table>
@@ -31,6 +34,7 @@
                 <th>Date</th>
                 <th>Type</th>
                 <th>Unité</th>
+                <th>Chauffeur</th>
                 <th>Statut</th>
                 <th>Photo</th>
                 <th>Description</th>
@@ -44,6 +48,22 @@
                     <td>{{ date('d/m/Y', strtotime($s->date_signalement)) }}</td>
                     <td>{{ $types[$s->type_dechet] ?? $s->type_dechet }}</td>
                     <td>{{ $s->unite ?? 'Hors des Unités' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url('/admin/signalements/' . $s->id . '/chauffeur') }}">
+                            @csrf
+                            @method('PATCH')
+                            <select name="chauffeur_id" class="liste-statut" onchange="this.form.submit()" aria-label="Chauffeur du signalement {{ $s->id }}">
+                                <option value="" disabled @selected(!$s->chauffeur_id)>Choisir…</option>
+                                @if ($s->chauffeur_id && !$chauffeurs->contains('id', $s->chauffeur_id))
+                                    <option value="{{ $s->chauffeur_id }}" selected>{{ $s->chauffeur }}</option>
+                                @endif
+                                @foreach ($chauffeurs as $c)
+                                    <option value="{{ $c->id }}" @selected($s->chauffeur_id == $c->id)>{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            <noscript><button type="submit">OK</button></noscript>
+                        </form>
+                    </td>
                     <td>
                         <form method="POST" action="{{ url('/admin/signalements/' . $s->id . '/statut') }}">
                             @csrf
@@ -75,7 +95,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="vide">Aucun signalement pour le moment.</td>
+                    <td colspan="9" class="vide">Aucun signalement pour le moment.</td>
                 </tr>
             @endforelse
             </tbody>

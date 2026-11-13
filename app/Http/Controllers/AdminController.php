@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -104,11 +105,19 @@ class AdminController extends Controller
     {
         $signalements = DB::table('signalements as s')
             ->leftJoin('unites as u', 'u.id', '=', 's.unite_id')
-            ->select('s.id', 's.type_dechet', 's.description', 's.photo', 's.statut', 's.date_signalement', 'u.nom as unite')
+            ->leftJoin('users as c', 'c.id', '=', 's.chauffeur_id')
+            ->select('s.id', 's.type_dechet', 's.description', 's.photo', 's.statut', 's.date_signalement', 'u.nom as unite', 's.chauffeur_id', 'c.name as chauffeur')
             ->orderByDesc('s.id')
             ->paginate(15);
 
-        return view('admin.signalements', compact('signalements'));
+        $chauffeurs = DB::table('users')
+            ->where('role', 'chauffeur')
+            ->where('actif', true)
+            ->where('disponible', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('admin.signalements', compact('signalements', 'chauffeurs'));
     }
     public function detail($id)
     {
@@ -215,7 +224,62 @@ class AdminController extends Controller
 
         return back()->with('succes', 'Statut du signalement ' . $id . ' mis à jour.');
     }
+    public function affecterChauffeur(Request $request, $id)
+    {
+        $donnees = $request->validate([
+            'chauffeur_id' => 'required|integer',
+        ], [
+            'chauffeur_id.required' => 'Choisissez un chauffeur.',
+            'chauffeur_id.integer' => 'Ce chauffeur n\'est pas valide.',
+        ]);
 
+        $chauffeur = DB::table('users')
+            ->where('id', $donnees['chauffeur_id'])
+            ->where('role', 'chauffeur')
+            ->where('actif', true)
+            ->where('disponible', true)
+            ->first();
+
+        if (!$chauffeur) {
+            return back()->withErrors(['chauffeur_id' => 'Ce chauffeur n\'est pas disponible.']);
+        }
+
+        $modifies = DB::table('signalements')
+            ->where('id', $id)
+            ->update([
+                'chauffeur_id' => $chauffeur->id,
+                'statut' => 'en cours',
+                'updated_at' => now(),
+            ]);
+
+        if ($modifies === 0) {
+            abort(404);
+        }
+
+        // Informations pour l'e-mail
+        $signalement = DB::table('signalements as s')
+            ->leftJoin('unites as u', 'u.id', '=', 's.unite_id')
+            ->where('s.id', $id)
+            ->first(['s.id', 's.type_dechet', 's.description', 'u.nom as unite']);
+
+        $type = ucfirst(str_replace('_', ' ', $signalement->type_dechet));
+
+        $texte = "Bonjour " . $chauffeur->name . ",\n\n"
+            . "Un signalement vous a été affecté.\n\n"
+            . "Numéro : " . $signalement->id . "\n"
+            . "Type de déchet : " . $type . "\n"
+            . "Unité : " . ($signalement->unite ?? 'Hors des Unités') . "\n"
+            . "Description : " . ($signalement->description ?? 'Aucune') . "\n\n"
+            . "Merci de vous rendre sur place.\n\n"
+            . "GéoDéchet";
+
+        Mail::raw($texte, function ($message) use ($chauffeur, $signalement) {
+            $message->to($chauffeur->email)
+                ->subject('GéoDéchet : signalement n° ' . $signalement->id . ' affecté');
+        });
+
+        return back()->with('succes', 'Signalement ' . $id . ' affecté à ' . $chauffeur->name . '.');
+    }
     public function supprimer($id)
     {
         $signalement = DB::table('signalements')->where('id', $id)->first();

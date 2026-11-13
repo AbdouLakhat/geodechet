@@ -21,6 +21,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/signalements', [AdminController::class, 'signalements']);
     Route::get('/donnees/signalements', [AdminController::class, 'donneesSignalements']);
     Route::patch('/signalements/{id}/statut', [AdminController::class, 'changerStatut'])->whereNumber('id');
+    Route::patch('/signalements/{id}/chauffeur', [AdminController::class, 'affecterChauffeur'])->whereNumber('id');
     Route::get('/signalements/{id}/modifier', [AdminController::class, 'modifier'])->whereNumber('id');
     Route::put('/signalements/{id}', [AdminController::class, 'mettreAJour'])->whereNumber('id');
     Route::delete('/signalements/{id}', [AdminController::class, 'supprimer'])->whereNumber('id');
