@@ -202,6 +202,7 @@ class AdminController extends Controller
             'email' => isset($donnees['email']) ? strtolower($donnees['email']) : null,
             'updated_at' => now(),
         ]);
+        $this->prevenirCitoyen($id, $signalement->statut, $donnees['statut']);
 
         return redirect('/admin/signalements/' . $id)->with('succes', 'Signalement ' . $id . ' modifié.');
     }
@@ -214,6 +215,8 @@ class AdminController extends Controller
             'statut.in' => 'Ce statut n\'est pas valide.',
         ]);
 
+        $ancienStatut = DB::table('signalements')->where('id', $id)->value('statut');
+
         $modifies = DB::table('signalements')
             ->where('id', $id)
             ->update(['statut' => $donnees['statut'], 'updated_at' => now()]);
@@ -221,6 +224,8 @@ class AdminController extends Controller
         if ($modifies === 0) {
             abort(404);
         }
+
+        $this->prevenirCitoyen($id, $ancienStatut, $donnees['statut']);
 
         return back()->with('succes', 'Statut du signalement ' . $id . ' mis à jour.');
     }
@@ -243,7 +248,7 @@ class AdminController extends Controller
         if (!$chauffeur) {
             return back()->withErrors(['chauffeur_id' => 'Ce chauffeur n\'est pas disponible.']);
         }
-
+        $ancienStatut = DB::table('signalements')->where('id', $id)->value('statut');
         $modifies = DB::table('signalements')
             ->where('id', $id)
             ->update([
@@ -256,12 +261,18 @@ class AdminController extends Controller
             abort(404);
         }
 
+        $this->prevenirCitoyen($id, $ancienStatut, 'en cours');
+
         // Informations pour l'e-mail
         $signalement = DB::table('signalements as s')
             ->leftJoin('unites as u', 'u.id', '=', 's.unite_id')
             ->where('s.id', $id)
-            ->first(['s.id', 's.type_dechet', 's.description', 'u.nom as unite']);
-
+            ->select(
+                's.id', 's.type_dechet', 's.description', 'u.nom as unite',
+                DB::raw('ST_Y(s.position) as latitude'),
+                DB::raw('ST_X(s.position) as longitude')
+            )
+            ->first();
         $type = ucfirst(str_replace('_', ' ', $signalement->type_dechet));
 
         Mail::send('emails.affectation', compact('chauffeur', 'signalement', 'type'), function ($message) use ($chauffeur, $signalement) {
@@ -286,5 +297,63 @@ class AdminController extends Controller
         }
 
         return redirect('/admin/signalements')->with('succes', 'Signalement ' . $id . ' supprimé.');
+    }
+    private function prevenirCitoyen($id, $ancienStatut, $nouveauStatut)
+    {
+        // Pas d'e-mail si le statut n'a pas changé, ou s'il revient à "en attente"
+        if ($ancienStatut === $nouveauStatut) {
+            return;
+        }
+        if ($nouveauStatut !== 'en cours' && $nouveauStatut !== 'traité') {
+            return;
+        }
+
+        $s = DB::table('signalements as s')
+            ->leftJoin('unites as u', 'u.id', '=', 's.unite_id')
+            ->where('s.id', $id)
+            ->first(['s.id', 's.type_dechet', 's.prenom', 's.email', 'u.nom as unite']);
+
+        if (!$s || !$s->email) {
+            return;
+        }
+
+        $types = [
+            'ordures_menageres' => 'Ordures ménagères',
+            'encombrants' => 'Encombrants',
+            'gravats' => 'Gravats',
+            'dechets_verts' => 'Déchets verts',
+            'autre' => 'Autre',
+        ];
+
+        if ($nouveauStatut === 'en cours') {
+            $titre = 'Votre signalement est pris en charge';
+            $texte = 'Bonne nouvelle : votre signalement est pris en charge. Une équipe va se rendre sur place. Vous recevrez un dernier e-mail quand le dépôt sera traité.';
+            $couleur = '#1565c0';
+            $statut = 'En cours';
+            $sujet = 'GéoDéchet : signalement n° ' . $s->id . ' pris en charge';
+        } else {
+            $titre = 'Votre signalement a été traité';
+            $texte = 'Le dépôt que vous avez signalé a été traité. Merci de votre aide pour garder la commune propre.';
+            $couleur = '#2e7d32';
+            $statut = 'Traité';
+            $sujet = 'GéoDéchet : signalement n° ' . $s->id . ' traité';
+        }
+
+        $infos = [
+            'titre' => $titre,
+            'texte' => $texte,
+            'statut' => $statut,
+            'couleur' => $couleur,
+            'prenom' => $s->prenom,
+            'numero' => $s->id,
+            'type' => $types[$s->type_dechet] ?? $s->type_dechet,
+            'unite' => $s->unite ?? 'Hors des Unités',
+        ];
+
+        rescue(function () use ($infos, $s, $sujet) {
+            Mail::send('emails.citoyen', $infos, function ($message) use ($s, $sujet) {
+                $message->to($s->email)->subject($sujet);
+            });
+        });
     }
 }

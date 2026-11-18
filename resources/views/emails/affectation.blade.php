@@ -34,12 +34,23 @@
                                 <td>{{ $signalement->unite ?? 'Hors des Unités' }}</td>
                             </tr>
                             <tr>
+                                <td><strong>Position</strong></td>
+                                <td>{{ number_format($signalement->latitude, 5, '.', '') }}, {{ number_format($signalement->longitude, 5, '.', '') }}</td>
+                            </tr>
+                            <tr>
                                 <td><strong>Description</strong></td>
                                 <td>{{ $signalement->description ?? 'Aucune' }}</td>
                             </tr>
                         </table>
 
-                        <p style="margin:18px 0 0 0;">Merci de vous rendre sur place.</p>
+                        <p style="margin:22px 0; text-align:center;">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination={{ $signalement->latitude }},{{ $signalement->longitude }}&travelmode=driving"
+                               style="background-color:#2e7d32; color:#ffffff; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:bold; display:inline-block;">
+                                Voir l'itinéraire
+                            </a>
+                        </p>
+
+                        <p style="margin:0;">Merci de vous rendre sur place.</p>
                     </td>
                 </tr>
 

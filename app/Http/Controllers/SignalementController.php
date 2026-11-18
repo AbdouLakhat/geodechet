@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Mail;
 class SignalementController extends Controller
 {
     public function index()
@@ -103,10 +103,11 @@ class SignalementController extends Controller
 
         $telephone = '+221' . substr(preg_replace('/\D/', '', $donnees['telephone']), -9);
 
-        DB::insert(
+        $nouveau = DB::selectOne(
             'INSERT INTO signalements
             (unite_id, type_dechet, description, photo, statut, nom, prenom, telephone, email, consentement_le, date_signalement, position, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ST_SetSRID(ST_MakePoint(?, ?), 4326), now(), now())',
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ST_SetSRID(ST_MakePoint(?, ?), 4326), now(), now())
+         RETURNING id',
             [
                 $unite->id,
                 $donnees['type_dechet'],
@@ -121,6 +122,33 @@ class SignalementController extends Controller
                 $donnees['latitude'],
             ]
         );
+
+        // E-mail de confirmation au citoyen (statut : en attente)
+        $types = [
+            'ordures_menageres' => 'Ordures ménagères',
+            'encombrants' => 'Encombrants',
+            'gravats' => 'Gravats',
+            'dechets_verts' => 'Déchets verts',
+            'autre' => 'Autre',
+        ];
+
+        $infos = [
+            'titre' => 'Votre signalement a bien été reçu',
+            'texte' => 'Nous avons bien reçu votre signalement. Il est en attente de traitement. Vous recevrez un nouvel e-mail quand un chauffeur sera affecté, puis quand le dépôt sera traité.',
+            'statut' => 'En attente',
+            'couleur' => '#e08a00',
+            'prenom' => $donnees['prenom'],
+            'numero' => $nouveau->id,
+            'type' => $types[$donnees['type_dechet']],
+            'unite' => $unite->nom,
+        ];
+
+        rescue(function () use ($infos, $donnees) {
+            Mail::send('emails.citoyen', $infos, function ($message) use ($infos, $donnees) {
+                $message->to(strtolower($donnees['email']))
+                    ->subject('GéoDéchet : signalement n° ' . $infos['numero'] . ' reçu');
+            });
+        });
 
         return response()->json(['message' => 'Signalement enregistré dans ' . $unite->nom]);
     }
