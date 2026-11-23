@@ -15,6 +15,7 @@
         <p class="message-ok">{{ session('succes') }}</p>
     @endif
 
+    {{-- Liste les chauffeurs et permet de modifier, activer ou supprimer leur compte. --}}
     <div class="defilement">
         <table>
             <thead>
@@ -75,6 +76,7 @@
         @endif
     </div>
 
+    {{-- Demande une confirmation avant de supprimer un compte chauffeur. --}}
     <dialog id="dialogue-suppression">
         <form method="POST" id="form-suppression">
             @csrf

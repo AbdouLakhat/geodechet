@@ -1,19 +1,115 @@
-* { box-sizing: border-box; }
+/* Centre le formulaire sur un fond vert. */
+* {
+    box-sizing: border-box;
+}
 
-body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif; background: linear-gradient(135deg, #1b5e20, #43a047); }
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1b5e20, #43a047);
+}
 
-.boite { background: white; width: 100%; max-width: 380px; margin: 20px; padding: 28px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
-.boite h1 { margin: 14px 0 4px 0; color: #1b5e20; }
-.sous-titre { margin: 0 0 18px 0; color: #607d8b; font-size: 14px; }
+/* Conteneur blanc du formulaire de connexion. */
+.boite {
+    width: min(100% - 32px, 380px);
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
 
-.retour { color: #1b5e20; text-decoration: none; font-size: 14px; }
-.retour:hover { text-decoration: underline; }
+.logo {
+    display: block;
+    height: 80px;
+    max-width: 100%;
+    margin: 16px auto 0;
+}
 
-label { display: block; margin-top: 14px; font-size: 14px; color: #37474f; }
-input { width: 100%; margin-top: 4px; padding: 10px; border: 1px solid #b0bec5; border-radius: 6px; font-size: 15px; }
-input:focus { outline: 2px solid #43a047; border-color: transparent; }
+.boite h1 {
+    margin: 14px 0 4px;
+    color: #1b5e20;
+    text-align: center;
+}
 
-.erreur { color: #c62828; font-size: 14px; margin: 10px 0 0 0; }
+.sous-titre {
+    margin: 0 0 18px;
+    color: #546e7a;
+    font-size: 14px;
+    text-align: center;
+}
 
-button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 8px; background: #1b5e20; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-button:hover { background: #2e7d32; }
+.retour {
+    color: #1b5e20;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.retour:hover {
+    text-decoration: underline;
+}
+
+/* Champs, libellés et messages de validation. */
+.boite label {
+    display: block;
+    margin-top: 14px;
+    color: #37474f;
+    font-size: 14px;
+}
+
+.boite input {
+    width: 100%;
+    margin-top: 4px;
+    padding: 10px;
+    border: 1px solid #b0bec5;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.boite input:focus-visible {
+    border-color: #1b5e20;
+    outline: 3px solid #81c784;
+    outline-offset: 2px;
+}
+
+.erreur {
+    margin: 10px 0 0;
+    color: #b71c1c;
+    font-size: 14px;
+}
+
+/* Bouton principal et indication de focus au clavier. */
+.boite button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: #1b5e20;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.boite button:hover {
+    background: #2e7d32;
+}
+
+.retour:focus-visible,
+.boite button:focus-visible {
+    outline: 3px solid #ffca28;
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* Désactive la transition si l’utilisateur réduit les animations. */
+    .boite button {
+        transition: none;
+    }
+}

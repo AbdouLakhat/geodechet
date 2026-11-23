@@ -29,16 +29,19 @@ var coucheSignalements = L.layerGroup().addTo(carte);
 var styleNormal = { color: '#1565c0', weight: 2, fillColor: '#42a5f5', fillOpacity: 0.2, bubblingMouseEvents: true };
 var styleSurvol = { weight: 3, fillOpacity: 0.4 };
 
+// Convertit le texte en contenu sûr avant de l’insérer dans une fenêtre HTML.
 function echapper(texte) {
     var div = document.createElement('div');
     div.textContent = texte;
     return div.innerHTML;
 }
 
+// Ouvre une fenêtre d’information à l’emplacement choisi sur la carte.
 function ouvrirBulle(position, contenu) {
     L.popup().setLatLng(position).setContent(contenu).openOn(carte);
 }
 
+// Affiche un message à l’utilisateur et masque automatiquement les réussites.
 function afficherMessage(texte, type) {
     var zone = document.getElementById('message');
     zone.textContent = texte;
@@ -51,6 +54,7 @@ function afficherMessage(texte, type) {
 
 /* ---------- Chargement des données ---------- */
 
+// Récupère les limites géographiques et les affiche comme des zones sur la carte.
 function chargerUnites() {
     fetch('/unites')
         .then(function (reponse) { return reponse.json(); })
@@ -71,6 +75,7 @@ function chargerUnites() {
 
 var DUREE_AFFICHAGE = 10 * 60 * 1000;
 
+// Relit les signalements récents conservés temporairement dans l’onglet du navigateur.
 function lireMesSignalements() {
     var liste = JSON.parse(sessionStorage.getItem('mesSignalements') || '[]');
     var maintenant = Date.now();
@@ -79,6 +84,7 @@ function lireMesSignalements() {
     });
 }
 
+// Dessine sur la carte les signalements récents envoyés par le navigateur.
 function afficherMesSignalements() {
     var liste = lireMesSignalements();
     sessionStorage.setItem('mesSignalements', JSON.stringify(liste));
@@ -108,6 +114,7 @@ function afficherMesSignalements() {
     });
 }
 
+// Ajoute le signalement à la liste temporaire affichée sur la carte.
 function ajouterMonSignalement(lat, lng, type) {
     var liste = lireMesSignalements();
     liste.push({ lat: lat, lng: lng, type: type, heure: Date.now() });
@@ -117,12 +124,14 @@ function ajouterMonSignalement(lat, lng, type) {
 
 /* ---------- Position du dépôt ---------- */
 
+// Mémorise la position choisie et affiche ses coordonnées dans le formulaire.
 function afficherPoint(point) {
     pointChoisi = point;
     document.getElementById('coords').textContent =
         point.lat.toFixed(5) + ', ' + point.lng.toFixed(5);
 }
 
+// Place un repère déplaçable pour permettre de corriger la position du dépôt.
 function placerPoint(point) {
     if (marqueur) carte.removeLayer(marqueur);
     marqueur = L.marker(point, { draggable: true }).addTo(carte);
@@ -133,6 +142,7 @@ function placerPoint(point) {
     document.getElementById('panneau').classList.remove('cache');
 }
 
+// Affiche le choix entre utiliser sa position et cliquer sur la carte.
 function ouvrirChoix() {
     carte.closePopup();
     document.getElementById('choix-info').textContent = '';
@@ -146,6 +156,7 @@ function fermerChoix() {
     choixOuvert = false;
 }
 
+// Demande au navigateur la position GPS du téléphone ou de l’ordinateur.
 function utiliserMaPosition() {
     var info = document.getElementById('choix-info');
 
@@ -176,6 +187,7 @@ function utiliserMaPosition() {
 
 /* ---------- Erreurs du formulaire ---------- */
 
+// Affiche chaque erreur près du champ concerné et place le curseur sur le premier.
 function afficherErreurs(erreurs) {
     var premier = null;
 
@@ -210,6 +222,7 @@ function afficherErreurs(erreurs) {
     }
 }
 
+// Retire les erreurs affichées lorsque l’utilisateur recommence sa saisie.
 function effacerErreurs() {
     document.querySelectorAll('#panneau .invalide').forEach(function (c) {
         c.classList.remove('invalide');
@@ -222,6 +235,7 @@ function effacerErreurs() {
 
 /* ---------- Mode signalement ---------- */
 
+// Active le mode qui permet de choisir le point du dépôt sur la carte.
 function activerSignalement() {
     modeSignalement = true;
     carte.closePopup();
@@ -230,6 +244,7 @@ function activerSignalement() {
     afficherMessage('Clique sur la carte à l\'endroit du dépôt.', 'info');
 }
 
+// Réinitialise le formulaire, le repère et les messages du signalement en cours.
 function annulerSignalement() {
     fermerChoix();
     modeSignalement = false;
@@ -252,6 +267,7 @@ function annulerSignalement() {
     document.getElementById('message').style.display = 'none';
 }
 
+// Vérifie les champs puis envoie le signalement au serveur avec sa photo éventuelle.
 function envoyerSignalement() {
     effacerErreurs();
 
@@ -335,6 +351,7 @@ function envoyerSignalement() {
     var lat = pointChoisi.lat;
     var lng = pointChoisi.lng;
 
+    // Envoie le jeton CSRF attendu par Laravel avec les données du formulaire.
     fetch('/signalements', {
         method: 'POST',
         headers: {
@@ -363,6 +380,11 @@ function envoyerSignalement() {
             } else {
                 afficherErreurs([[null, 'Une erreur est survenue. Réessaie.']]);
             }
+        })
+        .catch(function () {
+            bouton.disabled = false;
+            bouton.textContent = 'Envoyer';
+            afficherErreurs([[null, 'Impossible d’envoyer le signalement. Vérifie ta connexion puis réessaie.']]);
         });
 }
 
@@ -393,6 +415,7 @@ carte.on('click', function (e) {
     placerPoint(e.latlng);
 });
 
+// Affiche un aperçu de la photo sélectionnée avant l’envoi.
 document.getElementById('photo').addEventListener('change', function () {
     var apercu = document.getElementById('apercu');
     var fichier = this.files[0];

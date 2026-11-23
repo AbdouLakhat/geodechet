@@ -9,6 +9,7 @@
     <h1>Carte</h1>
     <p class="total">Unités et signalements de la commune</p>
 
+    {{-- Ces listes filtrent les signalements affichés sur la carte. --}}
     <div class="barre-filtres">
         <label>Type
             <select id="filtre-type">
@@ -34,6 +35,7 @@
         <span id="compteur"></span>
     </div>
 
+    {{-- La carte reçoit les unités et signalements chargés par admin-carte.js. --}}
     <div id="carte-admin"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -4,7 +4,5 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Unite extends Model
-{
-    //
-}
+/** Représente une unité géographique affichée sur la carte. */
+class Unite extends Model {}

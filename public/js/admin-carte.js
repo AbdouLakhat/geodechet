@@ -24,6 +24,7 @@ var coucheSignalements = L.layerGroup().addTo(carte);
 var styleNormal = { color: '#1565c0', weight: 2, fillColor: '#42a5f5', fillOpacity: 0.2 };
 var styleSurvol = { weight: 3, fillOpacity: 0.4 };
 
+// Protège le texte avant de l’insérer dans le contenu HTML d’une fenêtre de carte.
 function echapper(texte) {
     var div = document.createElement('div');
     div.textContent = texte;
@@ -48,6 +49,7 @@ legende.addTo(carte);
 
 /* ---------- Unités ---------- */
 
+// Charge les contours des unités depuis le serveur et les dessine sur la carte.
 function chargerUnites() {
     fetch('/unites')
         .then(function (reponse) { return reponse.json(); })
@@ -65,6 +67,7 @@ function chargerUnites() {
 
 /* ---------- Signalements ---------- */
 
+// Récupère les signalements, puis demande leur affichage sur la carte.
 function chargerSignalements() {
     fetch('/admin/donnees/signalements', { headers: { 'Accept': 'application/json' } })
         .then(function (reponse) { return reponse.json(); })
@@ -74,6 +77,7 @@ function chargerSignalements() {
         });
 }
 
+// Filtre les signalements selon les choix de l’administrateur et actualise la carte.
 function afficherSignalements() {
     var typeChoisi = document.getElementById('filtre-type').value;
     var statutChoisi = document.getElementById('filtre-statut').value;

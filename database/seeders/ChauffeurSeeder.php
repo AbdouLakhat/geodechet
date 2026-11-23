@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\Hash;
 
 class ChauffeurSeeder extends Seeder
 {
+    /** Crée les comptes chauffeur de démonstration avec le mot de passe configuré. */
     public function run(): void
     {
-        $motDePasse = env('CHAUFFEUR_PASSWORD');
+        $motDePasse = config('geodechet.chauffeur_password');
 
-        if (!$motDePasse) {
+        if (! $motDePasse) {
             $this->command->error('Ajoutez CHAUFFEUR_PASSWORD dans le fichier .env');
+
             return;
         }
 
+        // Chaque ligne contient : nom, e-mail, téléphone, permis, véhicule, disponibilité et activation.
         $chauffeurs = [
             ['Moussa Diallo', 'moussa.diallo@geodechet.test', '+221770000001', 'SN-PC-2019-0101', 'DK-4521-AB', true, true],
             ['Aminata Sow', 'aminata.sow@geodechet.test', '+221770000002', 'SN-PC-2020-0202', 'DK-7834-CD', true, true],

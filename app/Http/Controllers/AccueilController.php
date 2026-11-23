@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class AccueilController extends Controller
 {
+    /** Récupère les chiffres affichés sur la page d’accueil. */
     public function index()
     {
         $nbUnites = DB::table('unites')->count();

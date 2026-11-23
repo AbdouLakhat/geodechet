@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ajoute les coordonnées du citoyen et la date à laquelle il a donné son consentement.
         Schema::table('signalements', function (Blueprint $table) {
             $table->string('nom')->nullable();
             $table->string('prenom')->nullable();

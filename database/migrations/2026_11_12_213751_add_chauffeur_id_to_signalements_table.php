@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Relie chaque signalement à son chauffeur et conserve la mission si le compte est supprimé.
         Schema::table('signalements', function (Blueprint $table) {
             $table->foreignId('chauffeur_id')
                 ->nullable()
@@ -18,7 +19,6 @@ return new class extends Migration
                 ->nullOnDelete();
         });
     }
-
 
     /**
      * Reverse the migrations.

@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ajoute les informations professionnelles et l’état du compte du chauffeur.
         Schema::table('users', function (Blueprint $table) {
             $table->string('numero_permis', 30)->nullable();
             $table->string('immatriculation', 20)->nullable();
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->boolean('actif')->default(true);
         });
     }
+
     /**
      * Reverse the migrations.
      */

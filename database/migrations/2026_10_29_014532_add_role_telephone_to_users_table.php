@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ajoute le numéro de téléphone et le rôle utilisé pour contrôler les espaces accessibles.
         Schema::table('users', function (Blueprint $table) {
             $table->string('telephone')->nullable();
             $table->string('role')->default('chauffeur');

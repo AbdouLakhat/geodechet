@@ -7,11 +7,13 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f1f8e9; color: #2
 .admin { display: flex; min-height: 100vh; }
 
 .lateral { width: 240px; flex-shrink: 0; background: #1b5e20; color: white; display: flex; flex-direction: column; padding: 20px 0; position: sticky; top: 0; height: 100vh; }
-.marque { font-size: 20px; font-weight: bold; padding: 0 22px 20px 22px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+.marque { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: bold; padding: 0 22px 20px 22px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+.icone-marque { width: 36px; height: 36px; flex-shrink: 0; padding: 2px; border-radius: 50%; background: white; object-fit: contain; }
+.marque span { line-height: 1.2; }
 
 .menu { display: flex; flex-direction: column; padding: 16px 12px; gap: 4px; flex: 1; }
 .menu a { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 11px 14px; border-radius: 8px; transition: background 0.2s; }
-.menu .icone { width: 19px; height: 19px; flex-shrink: 0; }
+.menu .icone { width: 20px; height: 20px; flex-shrink: 0; }
 .menu a:hover { background: rgba(255,255,255,0.12); }
 .menu a.actif { background: white; color: #1b5e20; font-weight: bold; }
 
@@ -55,7 +57,7 @@ body { margin: 0; font-family: Arial, sans-serif; background: #f1f8e9; color: #2
 
 /* ---------- Tableau ---------- */
 
-.defilement { overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.defilement { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
 table { width: 100%; border-collapse: collapse; }
 th { text-align: left; background: #e8f5e9; color: #1b5e20; padding: 12px; font-size: 14px; }
 td { padding: 10px 12px; border-top: 1px solid #eceff1; font-size: 14px; vertical-align: middle; }
@@ -107,6 +109,7 @@ dialog p { margin: 0 0 20px 0; color: #455a64; line-height: 1.5; }
     .bas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
     .bas form { margin: 0; }
     .bas button { width: auto; padding: 7px 14px; }
+    .contenu { padding: 20px 16px; }
 }
 #carte-admin { height: 70vh; min-height: 420px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
 .barre-filtres { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; background: white; padding: 14px 16px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 16px; }
@@ -177,3 +180,42 @@ a.btn-vert { display: inline-block; text-decoration: none; }
 .formulaire-admin .case-a-cocher { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
 .formulaire-admin .case-a-cocher input { width: auto; margin: 0; }
 .indication { font-size: 12px; color: #607d8b; margin: 4px 0 0 0; }
+
+.actions-chauffeur { min-width: 230px; }
+.actions-chauffeur details { margin-bottom: 8px; padding: 8px; border: 1px solid #cfd8dc; border-radius: 6px; background: #f8fbf8; }
+.actions-chauffeur summary { color: #1b5e20; font-size: 13px; font-weight: bold; cursor: pointer; }
+.actions-chauffeur form { display: grid; gap: 8px; margin-top: 10px; }
+.actions-chauffeur label { font-size: 12px; color: #37474f; }
+.actions-chauffeur input[type="file"], .actions-chauffeur textarea { width: 100%; padding: 8px; border: 1px solid #b0bec5; border-radius: 6px; font: inherit; font-size: 13px; }
+.actions-chauffeur textarea { resize: vertical; }
+.actions-chauffeur button { width: 100%; margin: 0; }
+.actions-chauffeur .selection-photo { display: grid; gap: 6px; }
+.actions-chauffeur .label-photo { font-size: 12px; color: #37474f; }
+.actions-chauffeur .champ-photo-cache { position: absolute; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0 !important; }
+.actions-chauffeur .btn-photo { padding: 9px 12px; border: 0; border-radius: 6px; background: #1565c0; color: white; font-size: 13px; cursor: pointer; }
+.actions-chauffeur .btn-photo:hover { background: #0d47a1; }
+.actions-chauffeur .nom-photo { color: #607d8b; font-size: 12px; overflow-wrap: anywhere; }
+.dialogue-choix-photo { padding: 20px; }
+.dialogue-choix-photo h2 { margin: 0 0 8px; color: #1b5e20; font-size: 18px; }
+.dialogue-choix-photo p { margin: 0 0 16px; color: #455a64; line-height: 1.4; }
+.choix-photo-actions { display: grid; gap: 10px; }
+.choix-photo-actions button { padding: 10px 12px; border: 0; border-radius: 6px; background: #1b5e20; color: white; font: inherit; cursor: pointer; }
+.choix-photo-actions button:hover { background: #2e7d32; }
+.choix-photo-actions button.btn-neutre { background: #eceff1; color: #37474f; }
+.choix-photo-actions button.btn-neutre:hover { background: #cfd8dc; }
+.chauffeur-filtres { margin-bottom: 16px; }
+.chauffeur-filtres label { flex: 0 1 240px; color: #37474f; }
+.chauffeur-filtres .reinitialiser-filtre { color: #1b5e20; font-size: 14px; font-weight: bold; text-decoration: none; }
+.chauffeur-filtres .reinitialiser-filtre:hover { text-decoration: underline; }
+.chauffeur-filtres .compteur-resultats { margin-left: auto; color: #1b5e20; font-weight: bold; }
+
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid #ffca28;
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .defilement::before { content: "Faites glisser le tableau pour voir toutes les colonnes."; display: block; padding: 9px 12px; color: #607d8b; font-size: 12px; }
+    .pagination { flex-wrap: wrap; gap: 10px; }
+    .chauffeur-filtres .compteur-resultats { flex-basis: 100%; margin-left: 0; }
+}

@@ -1,14 +1,16 @@
-body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-family: Arial, sans-serif; }
+/* Organisation de la page plein écran et barre située en haut. */
+body { margin: 0; height: 100vh; height: 100dvh; min-height: 0; display: flex; flex-direction: column; font-family: Arial, sans-serif; }
 
 .bandeau { background: #1b5e20; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
 .bandeau button { background: white; color: #1b5e20; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 #compteur { font-size: 14px; opacity: 0.85; margin-left: 10px; }
 
+/* Carte, messages et formulaires superposés à la carte. */
 #zone-carte { position: relative; flex: 1; overflow: hidden; }
 #carte { height: 100%; }
 #carte.mode-signalement, #carte.mode-signalement .leaflet-interactive { cursor: crosshair !important; }
 
-#message { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 10px 16px; border-radius: 6px; color: white; display: none; }
+#message { position: absolute; top: 15px; left: 50%; width: max-content; max-width: calc(100% - 24px); transform: translateX(-50%); z-index: 1000; padding: 10px 16px; border-radius: 6px; color: white; display: none; text-align: center; }
 #message.info { background: #1565c0; }
 #message.ok { background: #2e7d32; }
 
@@ -24,24 +26,31 @@ body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-fam
 #btn-envoyer { background: #1b5e20; color: white; }
 #btn-envoyer:disabled { background: #999; }
 
+/* Légende qui explique les couleurs des points sur la carte. */
 .legende { background: white; padding: 8px 10px; border-radius: 6px; box-shadow: 0 1px 5px rgba(0,0,0,0.3); font-size: 13px; line-height: 20px; }
 .legende i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
 
 @media (max-width: 600px) {
-    #panneau { width: 100%; top: auto; height: 60%; }
+    /* Sur téléphone, le formulaire devient un panneau en bas de l’écran. */
+    #panneau { width: 100%; top: auto; height: 70%; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
     #panneau.cache { transform: translateY(100%); }
 }
 #panneau input[type="file"] { width: 100%; margin-top: 4px; }
 #apercu { display: none; width: 100%; max-height: 150px; object-fit: cover; margin-top: 8px; border-radius: 6px; }
+.bandeau a:focus-visible, .bandeau button:focus-visible, #panneau input:focus-visible, #panneau select:focus-visible, #panneau textarea:focus-visible, #panneau button:focus-visible { outline: 3px solid #ffca28; outline-offset: 2px; }
 
 .bandeau-gauche { display: flex; align-items: center; gap: 12px; }
 .bandeau a.retour { color: white; text-decoration: none; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.6); border-radius: 6px; font-size: 14px; }
 .bandeau a.retour:hover { background: rgba(255,255,255,0.18); }
-#choix { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 1100; background: white; padding: 18px; border-radius: 10px; width: 300px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); text-align: center; }
+#choix { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 1100; background: white; padding: 18px; border-radius: 10px; width: min(300px, calc(100% - 24px)); max-height: calc(100% - 48px); overflow-y: auto; box-sizing: border-box; box-shadow: 0 4px 16px rgba(0,0,0,0.3); text-align: center; }
 #choix.cache { display: none; }
 #choix h3 { margin: 0 0 12px 0; }
-#choix button { display: block; width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; background: #1b5e20; color: white; }
-#choix button:hover { background: #2e7d32; }
+#choix button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; margin-top: 8px; border: 1px solid #d7e7d8; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 600; text-align: left; background: #f7fbf7; color: #1b5e20; transition: background 0.2s, border-color 0.2s, transform 0.2s; }
+#choix button:hover { background: #edf6ee; border-color: #8fbd92; transform: translateY(-1px); }
+#choix button:focus-visible { outline: 3px solid #ffca28; outline-offset: 2px; }
+.icone-choix { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 13px; background: #dceedd; color: #1b5e20; }
+.icone-choix svg { width: 24px; height: 24px; }
+.choix-carte .icone-choix { background: #e3effa; color: #1565c0; }
 #choix-info { font-size: 14px; color: #455a64; margin: 10px 0 0 0; min-height: 18px; }
 .astuce { font-size: 13px; color: #607d8b; }
 .coordonnees { border: 1px solid #cfd8dc; border-radius: 8px; padding: 10px 12px 12px 12px; margin: 14px 0 0 0; }
@@ -54,4 +63,16 @@ body { margin: 0; height: 100vh; display: flex; flex-direction: column; font-fam
 #panneau .invalide { border: 2px solid #c62828 !important; background: #ffebee; border-radius: 6px; }
 #panneau .consentement.invalide { padding: 6px; color: #c62828; }
 #panneau .message-champ { color: #c62828; font-size: 13px; margin: 4px 0 0 0; }
+
+@media (max-width: 600px) {
+    .bandeau { gap: 8px; padding: 8px 10px; }
+    .bandeau-gauche { min-width: 0; gap: 8px; }
+    .bandeau-gauche strong { font-size: 14px; }
+    .bandeau button { flex-shrink: 0; padding: 7px 9px; font-size: 12px; }
+    #choix { top: 16px; max-height: calc(100% - 32px); }
+}
+
+@media (max-width: 600px) and (orientation: landscape) {
+    #panneau { height: 82%; }
+}
 #panneau .message-champ::before { content: "⚠ "; }

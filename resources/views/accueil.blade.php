@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GéoDéchet – Gestion des déchets urbains</title>
-    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icone.png') }}">
+    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}?v={{ filemtime(public_path('css/accueil.css')) }}">
 </head>
 <body>
+{{-- Navigation principale vers les sections de la page et les autres espaces. --}}
 <header class="entete">
     <a class="logo" href="{{ url('/') }}">
         <img src="{{ asset('images/logo-icone.png') }}" alt="" class="logo-icone">
@@ -15,11 +17,13 @@
     <nav>
         <a href="#chiffres">Chiffres</a>
         <a href="#fonctionnement">Comment ça marche</a>
+        <a class="connexion-nav" href="{{ route('login') }}">Connexion</a>
         <a class="bouton-nav" href="{{ url('/carte') }}">Voir la carte</a>
     </nav>
 </header>
 
 <main>
+    {{-- Présentation du service et bouton pour créer un signalement. --}}
     <section class="banniere">
         <div class="fond"></div>
 
@@ -37,6 +41,7 @@
 
         <a class="fleche" href="#chiffres" aria-label="Descendre">&#8595;</a>
     </section>
+    {{-- Indicateurs calculés par le contrôleur et animés par le script d’accueil. --}}
     <section class="chiffres" id="chiffres">
         <h2>La commune en chiffres</h2>
         <div class="grille-chiffres">
@@ -58,23 +63,24 @@
             </div>
         </div>
     </section>
+    {{-- Résumé des étapes à suivre pour signaler un dépôt. --}}
     <section class="etapes" id="fonctionnement">
         <h2>Comment ça marche</h2>
         <div class="grille-etapes">
             <div class="etape">
                 <span class="numero">1</span>
                 <h3>Placez le dépôt</h3>
-                <p>Cliquez sur « Signaler un dépôt », puis sur la carte à l'endroit exact. L'application trouve toute seule l'Unité concernée.</p>
+                <p>Cliquez sur « Signaler un dépôt », puis choisissez votre position GPS ou indiquez l'emplacement sur la carte. L'application associe le signalement à l'Unité concernée.</p>
             </div>
             <div class="etape">
                 <span class="numero">2</span>
                 <h3>Décrivez-le</h3>
-                <p>Choisissez le type de déchet. Vous pouvez ajouter une description et une photo.</p>
+                <p>Choisissez le type de déchet et renseignez vos coordonnées. Vous pouvez aussi ajouter une description et une photo.</p>
             </div>
             <div class="etape">
                 <span class="numero">3</span>
-                <h3>Suivez-le sur la carte</h3>
-                <p>Votre signalement apparaît tout de suite sur la carte, avec sa couleur, son Unité et son statut.</p>
+                <h3>Recevez des nouvelles</h3>
+                <p>Vous recevez un e-mail de confirmation, puis des nouvelles lorsque votre signalement est pris en charge et traité.</p>
             </div>
         </div>
         <a class="btn btn-vert" href="{{ url('/carte') }}">Ouvrir la carte</a>

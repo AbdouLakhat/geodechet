@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+
 class SignalementController extends Controller
 {
+    /** Retourne les signalements au format GeoJSON utilisé par la carte publique. */
     public function index()
     {
         $lignes = DB::select(
@@ -26,7 +28,7 @@ class SignalementController extends Controller
                     'id' => $ligne->id,
                     'type_dechet' => $ligne->type_dechet,
                     'description' => $ligne->description,
-                    'photo' => $ligne->photo ? asset('storage/' . $ligne->photo) : null,
+                    'photo' => $ligne->photo ? asset('storage/'.$ligne->photo) : null,
                     'statut' => $ligne->statut,
                     'date_signalement' => $ligne->date_signalement,
                     'unite' => $ligne->unite,
@@ -40,6 +42,8 @@ class SignalementController extends Controller
             'features' => $features,
         ]);
     }
+
+    /** Valide un signalement, l’associe à une unité géographique et l’enregistre. */
     public function store(Request $request)
     {
         $donnees = $request->validate([
@@ -78,6 +82,7 @@ class SignalementController extends Controller
             'consentement.accepted' => 'Vous devez accepter l\'utilisation de vos informations.',
         ]);
 
+        // Cherche l’unité à moins de 30 mètres ; ST_MakePoint attend la longitude avant la latitude.
         $unite = DB::selectOne(
             'SELECT id, nom
          FROM unites
@@ -87,7 +92,7 @@ class SignalementController extends Controller
             [$donnees['longitude'], $donnees['latitude'], $donnees['longitude'], $donnees['latitude']]
         );
 
-        if (!$unite) {
+        if (! $unite) {
             return response()->json([
                 'message' => 'Position hors de la commune.',
                 'errors' => [
@@ -98,10 +103,11 @@ class SignalementController extends Controller
 
         $chemin = null;
         if ($request->hasFile('photo')) {
+            // Stocke la photo pour qu’elle puisse être affichée dans l’application.
             $chemin = $request->file('photo')->store('signalements', 'public');
         }
 
-        $telephone = '+221' . substr(preg_replace('/\D/', '', $donnees['telephone']), -9);
+        $telephone = '+221'.substr(preg_replace('/\D/', '', $donnees['telephone']), -9);
 
         $nouveau = DB::selectOne(
             'INSERT INTO signalements
@@ -143,13 +149,14 @@ class SignalementController extends Controller
             'unite' => $unite->nom,
         ];
 
+        // Une panne de messagerie ne doit pas empêcher l’enregistrement du signalement.
         rescue(function () use ($infos, $donnees) {
             Mail::send('emails.citoyen', $infos, function ($message) use ($infos, $donnees) {
                 $message->to(strtolower($donnees['email']))
-                    ->subject('GéoDéchet : signalement n° ' . $infos['numero'] . ' reçu');
+                    ->subject('GéoDéchet : signalement n° '.$infos['numero'].' reçu');
             });
         });
 
-        return response()->json(['message' => 'Signalement enregistré dans ' . $unite->nom]);
+        return response()->json(['message' => 'Signalement enregistré dans '.$unite->nom]);
     }
 }

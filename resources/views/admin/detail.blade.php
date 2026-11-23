@@ -25,6 +25,7 @@
     @endif
 
     <p><a href="{{ url('/admin/signalements/' . $signalement->id . '/modifier') }}" class="btn-modifier">Modifier ce signalement</a></p>
+    {{-- Affiche les données du dépôt et les coordonnées du citoyen. --}}
     <div class="detail-grille">
         <section class="fiche">
             <h2>Le signalement</h2>
@@ -40,6 +41,16 @@
 
                 <dt>Description</dt>
                 <dd>{{ $signalement->description ?: '–' }}</dd>
+
+                @if ($signalement->note_chauffeur)
+                    <dt>Retour chauffeur</dt>
+                    <dd>{{ $signalement->note_chauffeur }}</dd>
+                @endif
+
+                @if ($signalement->date_traitement)
+                    <dt>Traité le</dt>
+                    <dd>{{ date('d/m/Y à H:i', strtotime($signalement->date_traitement)) }}</dd>
+                @endif
 
                 <dt>Position</dt>
                 <dd>{{ number_format((float) $signalement->latitude, 5, '.', '') }}, {{ number_format((float) $signalement->longitude, 5, '.', '') }}</dd>
@@ -77,15 +88,27 @@
         </section>
     </div>
 
+    {{-- Affiche les photos et place le signalement sur une carte. --}}
     <div class="detail-grille">
         <section class="fiche">
-            <h2>Photo</h2>
+            <h2>Photo du dépôt</h2>
             @if ($signalement->photo)
                 <a href="{{ asset('storage/' . $signalement->photo) }}" target="_blank" rel="noopener">
                     <img class="photo-detail" src="{{ asset('storage/' . $signalement->photo) }}" alt="Photo du signalement {{ $signalement->id }}">
                 </a>
             @else
                 <p class="vide">Aucune photo.</p>
+            @endif
+        </section>
+
+        <section class="fiche">
+            <h2>Preuve de traitement</h2>
+            @if ($signalement->photo_traitement)
+                <a href="{{ asset('storage/' . $signalement->photo_traitement) }}" target="_blank" rel="noopener">
+                    <img class="photo-detail" src="{{ asset('storage/' . $signalement->photo_traitement) }}" alt="Photo de preuve du signalement {{ $signalement->id }}">
+                </a>
+            @else
+                <p class="vide">Aucune photo de preuve fournie.</p>
             @endif
         </section>
 

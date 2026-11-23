@@ -4,6 +4,7 @@
     <meta charset="utf-8">
 </head>
 <body style="margin:0; padding:0; background-color:#f3f4f6; font-family:Arial, Helvetica, sans-serif;">
+{{-- Donne au chauffeur les informations nécessaires pour rejoindre le dépôt. --}}
 <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f4f6; padding:24px 0;">
     <tr>
         <td align="center">

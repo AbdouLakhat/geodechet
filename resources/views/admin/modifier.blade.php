@@ -7,6 +7,7 @@
     <h1>Modifier le signalement n° {{ $signalement->id }}</h1>
     <p class="total">La position et la photo ne peuvent pas être modifiées.</p>
 
+    {{-- Le formulaire permet de corriger les informations sans changer la position ni la photo. --}}
     <form method="POST" action="{{ url('/admin/signalements/' . $signalement->id) }}" class="formulaire-admin" novalidate>
         @csrf
         @method('PUT')

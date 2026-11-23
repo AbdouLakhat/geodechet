@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CarteController extends Controller
 {
+    /** Retourne les limites des unités au format GeoJSON pour la carte. */
     public function unites()
     {
         $lignes = DB::select('SELECT id, numero, nom, ST_AsGeoJSON(contour) AS forme FROM unites ORDER BY numero');

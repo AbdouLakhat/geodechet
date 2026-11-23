@@ -1,6 +1,7 @@
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
+#chiffres, #fonctionnement { scroll-margin-top: 84px; }
 
 body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
 
@@ -12,8 +13,11 @@ body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
 .entete nav { display: flex; align-items: center; gap: 22px; }
 .entete nav a { color: #37474f; text-decoration: none; transition: color 0.2s; }
 .entete nav a:hover { color: #1b5e20; }
+.entete .connexion-nav { padding: 8px 14px; border: 1px solid #1b5e20; border-radius: 6px; color: #1b5e20; }
+.entete .connexion-nav:hover { background: #e8f5e9; color: #1b5e20; }
 .entete .bouton-nav { background: #1b5e20; color: white; padding: 8px 16px; border-radius: 6px; transition: background 0.2s, transform 0.2s; }
 .entete .bouton-nav:hover { color: white; background: #2e7d32; transform: translateY(-2px); }
+.entete a:focus-visible, .btn:focus-visible, .fleche:focus-visible { outline: 3px solid #ffca28; outline-offset: 3px; }
 
 /* ---------- Bannière ---------- */
 
@@ -68,8 +72,13 @@ body { margin: 0; font-family: Arial, sans-serif; color: #263238; }
 /* ---------- Téléphone ---------- */
 
 @media (max-width: 600px) {
-    .entete { padding: 12px 16px; }
-    .entete nav a:not(.bouton-nav) { display: none; }
+    .entete { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+    .logo { gap: 6px; font-size: 17px; }
+    .logo-icone { width: 32px; height: 32px; }
+    .entete nav { flex: 1 0 100%; order: 2; flex-wrap: wrap; justify-content: center; gap: 4px 8px; }
+    .entete nav a { padding: 6px 8px; font-size: 12px; }
+    .entete .connexion-nav, .entete .bouton-nav { padding: 7px 8px; font-size: 12px; }
+    #chiffres, #fonctionnement { scroll-margin-top: 112px; }
     .banniere { padding: 60px 18px; }
     .banniere h1 { font-size: 28px; }
 }

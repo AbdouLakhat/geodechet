@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\AjouterEntetesSecurite;
+use App\Http\Middleware\EstAdministrateur;
+use App\Http\Middleware\EstChauffeur;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,11 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Ajoute les en-têtes de sécurité aux requêtes du site.
+        $middleware->web(append: [AjouterEntetesSecurite::class]);
+
+        // Donne un nom court aux vérifications de rôle utilisées dans les routes.
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EstAdministrateur::class,
+            'admin' => EstAdministrateur::class,
+            'chauffeur' => EstChauffeur::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Les routes API ou les requêtes JSON reçoivent les erreurs au format JSON.
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

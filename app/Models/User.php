@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/** Représente un compte utilisateur, administrateur ou chauffeur. */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -25,8 +26,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            // Convertit automatiquement les dates, mots de passe et états en types adaptés.
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'actif' => 'boolean',
+            'disponible' => 'boolean',
         ];
     }
 }

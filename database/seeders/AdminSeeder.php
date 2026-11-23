@@ -8,20 +8,22 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
+    /** Crée ou met à jour le compte administrateur à partir de la configuration. */
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL');
-        $motDePasse = env('ADMIN_PASSWORD');
+        $email = config('geodechet.administrateur.email');
+        $motDePasse = config('geodechet.administrateur.password');
 
-        if (!$email || !$motDePasse) {
+        if (! $email || ! $motDePasse) {
             $this->command->error('ADMIN_EMAIL et ADMIN_PASSWORD manquent dans le fichier .env');
+
             return;
         }
 
         $admin = User::where('email', $email)->first();
 
-        if (!$admin) {
-            $admin = new User();
+        if (! $admin) {
+            $admin = new User;
             $admin->email = $email;
         }
 

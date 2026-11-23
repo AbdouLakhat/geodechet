@@ -13,6 +13,7 @@
     <h1>{{ $chauffeur ? 'Modifier le chauffeur' : 'Ajouter un chauffeur' }}</h1>
     <p class="total">Les champs sont tous obligatoires{{ $chauffeur ? ', sauf le mot de passe.' : '.' }}</p>
 
+    {{-- Utilise le même formulaire pour ajouter un chauffeur ou modifier ses informations. --}}
     <form method="POST"
           action="{{ $chauffeur ? url('/admin/chauffeurs/' . $chauffeur->id) : url('/admin/chauffeurs') }}"
           class="formulaire-admin" novalidate>
@@ -21,6 +22,7 @@
             @method('PUT')
         @endif
 
+        {{-- Coordonnées et informations de contact du chauffeur. --}}
         <section class="fiche">
             <h2>Identité</h2>
 
@@ -43,6 +45,7 @@
             @enderror
         </section>
 
+        {{-- Informations du véhicule, disponibilité et mot de passe du compte. --}}
         <section class="fiche">
             <h2>Véhicule et accès</h2>
 

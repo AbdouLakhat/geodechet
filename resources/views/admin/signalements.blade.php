@@ -26,6 +26,7 @@
     <p class="message-erreur">{{ $message }}</p>
     @enderror
 
+    {{-- Tableau de suivi : affectation du chauffeur, changement de statut et actions. --}}
     <div class="defilement">
         <table>
             <thead>
@@ -38,6 +39,7 @@
                 <th>Statut</th>
                 <th>Photo</th>
                 <th>Description</th>
+                <th>Retour chauffeur</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -86,6 +88,7 @@
                         @endif
                     </td>
                     <td>{{ $s->description ? Str::limit($s->description, 60) : '–' }}</td>
+                    <td>{{ $s->note_chauffeur ? Str::limit($s->note_chauffeur, 60) : '–' }}</td>
                     <td>
                         <div class="actions-ligne">
                             <a class="btn-modifier" href="{{ url('/admin/signalements/' . $s->id . '/modifier') }}">Modifier</a>
@@ -95,7 +98,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="vide">Aucun signalement pour le moment.</td>
+                    <td colspan="10" class="vide">Aucun signalement pour le moment.</td>
                 </tr>
             @endforelse
             </tbody>
@@ -112,6 +115,7 @@
         @endif
     </div>
 
+    {{-- Confirmation affichée avant la suppression définitive d’un signalement. --}}
     <dialog id="dialogue-suppression">
         <form method="POST" id="form-suppression">
             @csrf
