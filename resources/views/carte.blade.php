@@ -17,7 +17,13 @@
         <a class="retour" href="{{ url('/') }}">&larr;</a>
         <strong>GéoDéchet</strong>
     </div>
-    <button id="btn-signaler" type="button">Signaler un dépôt</button>
+    <button id="btn-signaler" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s-6.5-5.5-6.5-11a6.5 6.5 0 1 1 13 0c0 5.5-6.5 11-6.5 11Z"/>
+            <circle cx="12" cy="10" r="2.4"/>
+        </svg>
+        <span>Signaler un dépôt</span>
+    </button>
 </header>
 
 <main id="zone-carte">

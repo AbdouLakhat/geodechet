@@ -2,7 +2,8 @@
 body { margin: 0; height: 100vh; height: 100dvh; min-height: 0; display: flex; flex-direction: column; font-family: Arial, sans-serif; }
 
 .bandeau { background: #1b5e20; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
-.bandeau button { background: white; color: #1b5e20; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.bandeau button { display: flex; align-items: center; gap: 8px; background: white; color: #1b5e20; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.bandeau button svg { width: 18px; height: 18px; flex: 0 0 18px; }
 #compteur { font-size: 14px; opacity: 0.85; margin-left: 10px; }
 
 /* Carte, messages et formulaires superposés à la carte. */

@@ -138,6 +138,10 @@
                                             aria-haspopup="dialog"
                                             aria-controls="choix-photo-{{ $signalement->id }}"
                                         >
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/>
+                                                <circle cx="12" cy="13" r="3.5"/>
+                                            </svg>
                                             Choisir une photo
                                         </button>
                                         <span id="nom-photo-{{ $signalement->id }}" class="nom-photo" role="status" aria-live="polite">Aucune photo s&eacute;lectionn&eacute;e</span>
@@ -154,9 +158,18 @@
                                     <p>Choisissez comment ajouter la photo du traitement.</p>
                                     <div class="choix-photo-actions">
                                         <button type="button" data-photo-mode="camera" data-photo-input="photo-traitement-{{ $signalement->id }}">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/>
+                                                <circle cx="12" cy="13" r="3.5"/>
+                                            </svg>
                                             Prendre une photo
                                         </button>
                                         <button type="button" data-photo-mode="gallery" data-photo-input="photo-traitement-{{ $signalement->id }}">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                                                <circle cx="8.5" cy="9" r="1.5"/>
+                                                <path d="m21 15-5-5L5 20"/>
+                                            </svg>
                                             Choisir dans la galerie
                                         </button>
                                         <button type="button" class="btn-neutre" data-photo-dialog-close>Annuler</button>

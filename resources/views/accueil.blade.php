@@ -35,7 +35,13 @@
                 directement sur la carte des 20 Unités de la commune.
             </p>
             <div class="actions">
-                <a class="btn btn-plein" href="{{ url('/carte?signaler=1') }}">Signaler un dépôt</a>
+                <a class="btn btn-plein" href="{{ url('/carte?signaler=1') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 21s-6.5-5.5-6.5-11a6.5 6.5 0 1 1 13 0c0 5.5-6.5 11-6.5 11Z"/>
+                        <circle cx="12" cy="10" r="2.4"/>
+                    </svg>
+                    <span>Signaler un dépôt</span>
+                </a>
             </div>
         </div>
 
